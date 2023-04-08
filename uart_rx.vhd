@@ -20,16 +20,30 @@ end entity;
 
 
 
+
+
+
 -- Architecture implementation (INSERT YOUR IMPLEMENTATION HERE)
 architecture behavioral of UART_RX is
+
+    -- konstantni signal pro inverzi DIN
+    signal DIN_NOT : std_logic := not '0';
+
 begin
 
     -- Instance of RX FSM
     fsm: entity work.UART_RX_FSM
     port map (
         CLK => CLK,
-        RST => RST
+        RST => RST,
+        START_BIT => DIN_NOT 
     );
+
+    -- process co pri zmene DIN zmeni signal DIN_NOT
+    process (DIN)
+    begin
+        DIN_NOT <= not DIN;
+    end process;
 
     DOUT <= (others => '0');
     DOUT_VLD <= '0';

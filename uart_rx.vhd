@@ -36,7 +36,8 @@ begin
     port map (
         CLK => CLK,
         RST => RST,
-        START_BIT => DIN_NOT 
+        START_BIT => DIN_NOT,
+        TEST_OUT => DOUT_VLD
     );
 
     -- process co pri zmene DIN zmeni signal DIN_NOT
@@ -46,6 +47,6 @@ begin
     end process;
 
     DOUT <= (others => '0');
-    DOUT_VLD <= '0';
+    -- DOUT_VLD <= '0';
 
 end architecture;

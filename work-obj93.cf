@@ -1,14 +1,16 @@
 v 4
-file . "testbench.vhd" "a3da06b3dc786347571f2d5df0fd78e5332b1a2a" "20230408131919.431":
-  entity testbench at 4( 110) + 0 on 19;
-  architecture tb of testbench at 17( 288) + 0 on 20;
-file . "uart_rx_fsm.vhd" "89558cc2a41800cdda1cd1969c848a20497aad82" "20230408131919.322":
+file . "testbench.vhd" "a3da06b3dc786347571f2d5df0fd78e5332b1a2a" "20230408140448.144":
+  entity testbench at 4( 110) + 0 on 21;
+  architecture tb of testbench at 17( 288) + 0 on 22;
+file . "uart_rx_fsm.vhd" "89558cc2a41800cdda1cd1969c848a20497aad82" "20230408140448.093":
   entity uart_rx_fsm at 4( 121) + 0 on 11;
   architecture behavioral of uart_rx_fsm at 21( 390) + 0 on 12;
-file . "uart_rx.vhd" "ae841bd03f79b8d554c42c345c5c0081c791730d" "20230408131919.376":
+file . "uart_rx.vhd" "f20d64cff4c7dec7e4edafb72c42ba73aa071f3a" "20230408140448.118":
   entity uart_rx at 4( 94) + 0 on 13;
   entity demux_4_8 at 23( 498) + 0 on 14;
-  entity counter_4 at 35( 790) + 0 on 15;
-  architecture behavioral of counter_4 at 48( 1077) + 0 on 16;
-  architecture behavioral of demux_4_8 at 81( 1828) + 0 on 17;
-  architecture behavioral of uart_rx at 100( 2451) + 0 on 18;
+  entity counter_4 at 36( 792) + 0 on 15;
+  entity eq_4 at 49( 1105) + 0 on 16;
+  architecture behavioral of eq_4 at 62( 1394) + 0 on 17;
+  architecture behavioral of counter_4 at 76( 1670) + 0 on 18;
+  architecture behavioral of demux_4_8 at 111( 2498) + 0 on 19;
+  architecture behavioral of uart_rx at 126( 3113) + 0 on 20;

@@ -58,6 +58,55 @@ entity EQ_4 is
 end entity;
 
 
+-- entita AND (2 vstupy)
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
+entity AND_2 is 
+    port(
+        AND_IN_1 : in std_logic;
+        AND_IN_2 : in std_logic;
+        AND_OUT : out std_logic
+    );
+end entity;
+
+
+-- entita SUB_4 (4bit)
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
+entity SUB_4 is
+    port(
+        SUB_4_MIN : in std_logic_vector(3 downto 0);  -- minuend
+        SUB_4_SUB : in std_logic_vector(3 downto 0);  -- subtrahend
+        SUB_4_OUT : out std_logic_vector(3 downto 0)
+    );
+end entity;
+
+
+-- architektura SUB (4bit)
+architecture behavioral of SUB_4 is
+begin
+    process(SUB_4_MIN, SUB_4_SUB)
+    begin
+        SUB_4_OUT <= SUB_4_MIN - SUB_4_SUB;
+    end process;
+end architecture;
+
+
+-- architektura AND (2 vstupy)
+architecture behavioral of AND_2 is
+begin
+    process (AND_IN_1, AND_IN_2)
+    begin
+        AND_OUT <= '0';
+        if (AND_IN_1 = '1' and AND_IN_2 = '1') then
+            AND_OUT <= '1';
+        end if;
+    end process;
+end architecture;
+
+
 -- architektura EQ
 architecture behavioral of EQ_4 is 
 begin
@@ -72,7 +121,7 @@ begin
 end architecture;
 
 
--- architektura citace
+-- architektura 4bit citace
 architecture behavioral of COUNTER_4 is 
 
 -- tady je signal aby se z toho dalo i cist
@@ -128,11 +177,30 @@ architecture behavioral of UART_RX is
     -- konstantni signal pro inverzi DIN
     signal DIN_NOT : std_logic := not '0';
 
-    -- signal pro adresu DMX
+    -- signal pro adresu DMX (bude o 1 vetsi nez adresa vizte navrh)
     signal DMX_ADDRESS : std_logic_vector(3 downto 0) := "0000";
 
-    -- citac hodinoveho cyklu
+    -- signal pro adresu DMX (bude o 1 vetsi nez adresa vizte navrh)
+    signal DMX_ADDRESS_SUB : std_logic_vector(3 downto 0) := "0000";
+
+    -- vystup citace hodinoveho cyklu
     signal CLK_CNT : std_logic_vector(3 downto 0) := "0000";
+
+    -- vystup EQ (clk == 15)
+    signal CNT_CLK_EQ_15 : std_logic;
+
+    -- propojeni FSM a cnt_clk
+    signal CNT_CLK_RES : std_logic;
+    signal CNT_CLK_CE : std_logic;
+
+    -- propojeni FSM a EQ (clk == 7)
+    signal CNT_CLK_EQ_7 : std_logic;
+
+    -- propojeni FSM a CNT (bits)
+    signal RES_BIT_CNT : std_logic;
+
+    -- propojeni FSM a EQ (bits == 8)
+    signal BITS_EQ_8 : std_logic;
 
 begin
 
@@ -141,8 +209,13 @@ begin
     port map (
         CLK => CLK,
         RST => RST,
-        START_BIT => DIN_NOT
-        -- TEST_OUT => DOUT_VLD
+        START_BIT => DIN_NOT,
+        CE => CNT_CLK_CE,
+        RES => CNT_CLK_RES,
+        CNT7 => CNT_CLK_EQ_7,
+        RX_END => BITS_EQ_8,
+        RES_BIT_CNT => RES_BIT_CNT,
+        DOUT_VALID => DOUT_VLD
     );
 
     -- instance EQ pro CLK == 15
@@ -150,14 +223,22 @@ begin
     port map (
         EQ_IN_1 => CLK_CNT,
         EQ_IN_2 => "1111",
-        EQ_OUT => DOUT_VLD
+        EQ_OUT => CNT_CLK_EQ_15
+    );
+
+    -- instance EQ pro CLK == 7
+    clk_eq_7: entity work.EQ_4
+    port map (
+        EQ_IN_1 => CLK_CNT,
+        EQ_IN_2 => "0111",
+        EQ_OUT => CNT_CLK_EQ_7
     );
 
     -- instance demultiplexoru podle navrhu
     dmx: entity work.DEMUX_4_8
     port map(
         DM_IN => DIN,
-        ADDR => DMX_ADDRESS,
+        ADDR => DMX_ADDRESS_SUB,
         DM_OUT => DOUT
     );
 
@@ -165,9 +246,34 @@ begin
     cnt_clk: entity work.COUNTER_4
     port map (
         CNT_IN => CLK,
-        CNT_CE => '1',
-        CNT_RES => CLK,
+        CNT_CE => CNT_CLK_CE,
+        CNT_RES => CNT_CLK_RES,
         CNT_OUT => CLK_CNT
+    );
+
+    -- instance: citac bitu (bits)
+    cnt_bits: entity work.COUNTER_4
+    port map (
+        CNT_IN => CNT_CLK_EQ_15,
+        CNT_CE => '1',
+        CNT_RES => RES_BIT_CNT,
+        CNT_OUT => DMX_ADDRESS
+    );
+
+    -- instance SUB
+    sub: entity work.SUB_4
+    port map (
+        SUB_4_MIN => DMX_ADDRESS,
+        SUB_4_SUB => "0001",
+        SUB_4_OUT => DMX_ADDRESS_SUB
+    );
+
+    -- instance EQ (bits == 8)
+    bits_eq: entity work.EQ_4
+    port map (
+        EQ_IN_1 => DMX_ADDRESS,
+        EQ_IN_2 => "1000",
+        EQ_OUT => BITS_EQ_8
     );
 
     -- process co pri zmene DIN zmeni signal DIN_NOT

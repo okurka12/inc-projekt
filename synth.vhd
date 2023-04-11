@@ -25,7 +25,7 @@ architecture rtl of sub_4 is
   signal n100_o : std_logic_vector (3 downto 0);
 begin
   sub_4_out <= n100_o;
-  -- uart_rx.vhd:92:32
+  -- uart_rx.vhd:216:32
   n100_o <= std_logic_vector (unsigned (sub_4_min) - unsigned (sub_4_sub));
 end rtl;
 
@@ -51,19 +51,19 @@ architecture rtl of counter_4 is
   signal n96_q : std_logic_vector (3 downto 0) := "0000";
 begin
   cnt_out <= cnt_sig;
-  -- uart_rx.vhd:128:8
+  -- uart_rx.vhd:246:8
   cnt_sig <= n96_q; -- (isignal)
-  -- uart_rx.vhd:142:13
+  -- uart_rx.vhd:260:13
   n85_o <= '1' when rising_edge (cnt_in) else '0';
-  -- uart_rx.vhd:143:25
+  -- uart_rx.vhd:261:25
   n88_o <= '1' when cnt_sig = "1111" else '0';
-  -- uart_rx.vhd:146:36
+  -- uart_rx.vhd:264:36
   n90_o <= std_logic_vector (unsigned (cnt_sig) + unsigned'("0001"));
-  -- uart_rx.vhd:143:13
+  -- uart_rx.vhd:261:13
   n92_o <= n90_o when n88_o = '0' else "0000";
   -- uart_rx.vhd:39:8
   n95_o <= cnt_sig when cnt_ce = '0' else n92_o;
-  -- uart_rx.vhd:142:9
+  -- uart_rx.vhd:260:9
   process (cnt_in)
   begin
     if rising_edge (cnt_in) then
@@ -103,37 +103,37 @@ architecture rtl of demux_4_8 is
   signal n77_o : std_logic_vector (7 downto 0);
 begin
   dm_out <= n77_o;
-  -- uart_rx.vhd:163:34
+  -- uart_rx.vhd:281:34
   n46_o <= '1' when addr = "0000" else '0';
-  -- uart_rx.vhd:163:24
+  -- uart_rx.vhd:281:24
   n47_o <= '0' when n46_o = '0' else dm_in;
-  -- uart_rx.vhd:164:34
+  -- uart_rx.vhd:282:34
   n50_o <= '1' when addr = "0001" else '0';
-  -- uart_rx.vhd:164:24
+  -- uart_rx.vhd:282:24
   n51_o <= '0' when n50_o = '0' else dm_in;
-  -- uart_rx.vhd:165:34
+  -- uart_rx.vhd:283:34
   n54_o <= '1' when addr = "0010" else '0';
-  -- uart_rx.vhd:165:24
+  -- uart_rx.vhd:283:24
   n55_o <= '0' when n54_o = '0' else dm_in;
-  -- uart_rx.vhd:166:34
+  -- uart_rx.vhd:284:34
   n58_o <= '1' when addr = "0011" else '0';
-  -- uart_rx.vhd:166:24
+  -- uart_rx.vhd:284:24
   n59_o <= '0' when n58_o = '0' else dm_in;
-  -- uart_rx.vhd:167:34
+  -- uart_rx.vhd:285:34
   n62_o <= '1' when addr = "0100" else '0';
-  -- uart_rx.vhd:167:24
+  -- uart_rx.vhd:285:24
   n63_o <= '0' when n62_o = '0' else dm_in;
-  -- uart_rx.vhd:168:34
+  -- uart_rx.vhd:286:34
   n66_o <= '1' when addr = "0101" else '0';
-  -- uart_rx.vhd:168:24
+  -- uart_rx.vhd:286:24
   n67_o <= '0' when n66_o = '0' else dm_in;
-  -- uart_rx.vhd:169:34
+  -- uart_rx.vhd:287:34
   n70_o <= '1' when addr = "0110" else '0';
-  -- uart_rx.vhd:169:24
+  -- uart_rx.vhd:287:24
   n71_o <= '0' when n70_o = '0' else dm_in;
-  -- uart_rx.vhd:170:34
+  -- uart_rx.vhd:288:34
   n74_o <= '1' when addr = "0111" else '0';
-  -- uart_rx.vhd:170:24
+  -- uart_rx.vhd:288:24
   n75_o <= '0' when n74_o = '0' else dm_in;
   n77_o <= n75_o & n71_o & n67_o & n63_o & n59_o & n55_o & n51_o & n47_o;
 end rtl;
@@ -154,9 +154,9 @@ architecture rtl of eq_4 is
   signal n42_o : std_logic;
 begin
   eq_out <= n42_o;
-  -- uart_rx.vhd:115:21
+  -- uart_rx.vhd:233:21
   n39_o <= '1' when eq_in_1 = eq_in_2 else '0';
-  -- uart_rx.vhd:115:9
+  -- uart_rx.vhd:233:9
   n42_o <= '0' when n39_o = '0' else '1';
 end rtl;
 
@@ -240,27 +240,27 @@ begin
   dout_vld <= wrap_dout_vld;
   wrap_DOUT <= dmx_dm_out;
   wrap_DOUT_VLD <= fsm_dout_valid;
-  -- uart_rx.vhd:178:12
+  -- uart_rx.vhd:296:12
   din_not <= n24_o; -- (isignal)
-  -- uart_rx.vhd:181:12
+  -- uart_rx.vhd:299:12
   dmx_address <= cnt_bits_cnt_out; -- (isignal)
-  -- uart_rx.vhd:184:12
+  -- uart_rx.vhd:302:12
   dmx_address_sub <= sub_sub_4_out; -- (isignal)
-  -- uart_rx.vhd:187:12
+  -- uart_rx.vhd:305:12
   clk_cnt <= cnt_clk_cnt_out; -- (isignal)
-  -- uart_rx.vhd:190:12
+  -- uart_rx.vhd:308:12
   cnt_clk_eq_15 <= clk_eq_15_eq_out; -- (signal)
-  -- uart_rx.vhd:193:12
+  -- uart_rx.vhd:311:12
   cnt_clk_res <= fsm_res; -- (signal)
-  -- uart_rx.vhd:194:12
+  -- uart_rx.vhd:312:12
   cnt_clk_ce <= fsm_ce; -- (signal)
-  -- uart_rx.vhd:197:12
+  -- uart_rx.vhd:315:12
   cnt_clk_eq_7 <= clk_eq_7_eq_out; -- (signal)
-  -- uart_rx.vhd:200:12
+  -- uart_rx.vhd:318:12
   res_bit_cnt <= fsm_res_bit_cnt; -- (signal)
-  -- uart_rx.vhd:203:12
+  -- uart_rx.vhd:321:12
   bits_eq_8 <= bits_eq_eq_out; -- (signal)
-  -- uart_rx.vhd:208:5
+  -- uart_rx.vhd:326:5
   fsm : entity work.uart_rx_fsm port map (
     clk => wrap_CLK,
     rst => wrap_RST,
@@ -272,43 +272,43 @@ begin
     res_bit_cnt => fsm_res_bit_cnt,
     res_reg => open,
     dout_valid => fsm_dout_valid);
-  -- uart_rx.vhd:222:5
+  -- uart_rx.vhd:340:5
   clk_eq_15 : entity work.eq_4 port map (
     eq_in_1 => clk_cnt,
     eq_in_2 => n10_o,
     eq_out => clk_eq_15_eq_out);
-  -- uart_rx.vhd:230:5
+  -- uart_rx.vhd:348:5
   clk_eq_7 : entity work.eq_4 port map (
     eq_in_1 => clk_cnt,
     eq_in_2 => n12_o,
     eq_out => clk_eq_7_eq_out);
-  -- uart_rx.vhd:238:5
+  -- uart_rx.vhd:356:5
   dmx : entity work.demux_4_8 port map (
     dm_in => wrap_DIN,
     addr => dmx_address_sub,
     dm_out => dmx_dm_out);
-  -- uart_rx.vhd:246:5
+  -- uart_rx.vhd:364:5
   cnt_clk : entity work.counter_4 port map (
     cnt_in => wrap_CLK,
     cnt_ce => cnt_clk_ce,
     cnt_res => cnt_clk_res,
     cnt_out => cnt_clk_cnt_out);
-  -- uart_rx.vhd:255:5
+  -- uart_rx.vhd:373:5
   cnt_bits : entity work.counter_4 port map (
     cnt_in => cnt_clk_eq_15,
     cnt_ce => n16_o,
     cnt_res => res_bit_cnt,
     cnt_out => cnt_bits_cnt_out);
-  -- uart_rx.vhd:264:5
+  -- uart_rx.vhd:382:5
   sub : entity work.sub_4 port map (
     sub_4_min => dmx_address,
     sub_4_sub => n18_o,
     sub_4_out => sub_sub_4_out);
-  -- uart_rx.vhd:272:5
+  -- uart_rx.vhd:390:5
   bits_eq : entity work.eq_4 port map (
     eq_in_1 => dmx_address,
     eq_in_2 => n20_o,
     eq_out => bits_eq_eq_out);
-  -- uart_rx.vhd:282:20
+  -- uart_rx.vhd:400:20
   n24_o <= not wrap_DIN;
 end rtl;

@@ -92,7 +92,7 @@ entity OR_8 is
     port (
         OR_8_IN_1 : in std_logic_vector(7 downto 0);
         OR_8_IN_2 : in std_logic_vector(7 downto 0);
-        OR_8_OUT : out std_logic_vector(7 downto 0);
+        OR_8_OUT : out std_logic_vector(7 downto 0)
     );
 end entity;
 
@@ -105,7 +105,7 @@ entity AND_8_1 is
     port (
         AND_8_IN_1 : in std_logic_vector(7 downto 0);
         AND_8_IN_2 : in std_logic;
-        AND_8_OUT : out std_logic_vector(7 downto 0);
+        AND_8_OUT : out std_logic_vector(7 downto 0)
     );
 end entity;
 
@@ -123,10 +123,46 @@ entity OR_2 is
 end entity;
 
 
+-- entita registru
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
+entity REG is
+    port(
+        REG_IN : in std_logic_vector(7 downto 0);
+        REG_ENABLE : in std_logic;
+        REG_VAL : out std_logic_vector(7 downto 0)
+    );
+end entity;
+
+
+-- architektura registru
+architecture behavioral of REG is
+
+    -- signal ktery bude drzet hodnotu registru
+    signal REG_VAL_SIG : std_logic_vector(7 downto 0);
+
+begin
+
+    -- proces na zmenu hodnoty registru
+    process (REG_IN, REG_ENABLE)
+    begin
+        if (REG_ENABLE = '1') then
+            REG_VAL_SIG <= REG_IN;
+        end if;
+    end process;
+
+    -- prirazeni vystupu registru jeho hodnote (signal)
+    REG_VAL <= REG_VAL_SIG;
+
+end architecture;
+
+
+
 -- architektura OR (2 vstupy)
 architecture behavioral of OR_2 is
 begin
-    OR_OUT <= '1' when OR_IN_1 = '1' or OR_IN_2 = '1' else '0'
+    OR_OUT <= '1' when OR_IN_1 = '1' or OR_IN_2 = '1' else '0';
 end architecture;
 
 
@@ -137,21 +173,21 @@ end architecture;
 architecture behavioral of AND_8_1 is
 begin
     AND_8_OUT(0) <= '1' when AND_8_IN_1(0) = '1' and AND_8_IN_2 = '1'
-    else '0'
+    else '0';
     AND_8_OUT(1) <= '1' when AND_8_IN_1(1) = '1' and AND_8_IN_2 = '1'
-    else '0'
+    else '0';
     AND_8_OUT(2) <= '1' when AND_8_IN_1(2) = '1' and AND_8_IN_2 = '1'
-    else '0'
+    else '0';
     AND_8_OUT(3) <= '1' when AND_8_IN_1(3) = '1' and AND_8_IN_2 = '1'
-    else '0'
+    else '0';
     AND_8_OUT(4) <= '1' when AND_8_IN_1(4) = '1' and AND_8_IN_2 = '1'
-    else '0'
+    else '0';
     AND_8_OUT(5) <= '1' when AND_8_IN_1(5) = '1' and AND_8_IN_2 = '1'
-    else '0'
+    else '0';
     AND_8_OUT(6) <= '1' when AND_8_IN_1(6) = '1' and AND_8_IN_2 = '1'
-    else '0'
+    else '0';
     AND_8_OUT(7) <= '1' when AND_8_IN_1(7) = '1' and AND_8_IN_2 = '1'
-    else '0'
+    else '0';
 
 end architecture;
 
@@ -185,7 +221,7 @@ end architecture;
 -- architektura AND (2 vstupy)
 architecture behavioral of AND_2 is
 begin
-    AND_OUT <= '1' when AND_IN_1 = '1' and AND_IN_2 = '1' else '0'
+    AND_OUT <= '1' when AND_IN_1 = '1' and AND_IN_2 = '1' else '0';
 end architecture;
 
 

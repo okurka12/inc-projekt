@@ -320,6 +320,27 @@ architecture behavioral of UART_RX is
     -- propojeni FSM a EQ (bits == 8)
     signal BITS_EQ_8 : std_logic;
 
+    -- propojeni DMX a OR8
+    signal DMX_OUT : std_logic_vector(7 downto 0);
+
+    -- propojeni nove hodnoty registru s tim divnym andem
+    signal NEW_REG_VAL_1 : std_logic_vector(7 downto 0);
+
+    -- nova hodnota registru po tom divnem andu
+    signal NEW_REG_VAL_2 : std_logic_vector(7 downto 0);
+
+    -- hodnota registru
+    signal CURR_REG_VAL : std_logic_vector(7 downto 0);
+
+    -- vystup toho oru na REG_ENABLE
+    signal REG_ENABLE : std_logic;
+
+    -- vystup FSM RES_REG
+    signal RES_REG : std_logic;
+
+    -- negace vystupu FSM RES_REG
+    signal NOT_RES_REG : std_logic;
+
 begin
 
     -- Instance of RX FSM
@@ -333,7 +354,8 @@ begin
         CNT7 => CNT_CLK_EQ_7,
         RX_END => BITS_EQ_8,
         RES_BIT_CNT => RES_BIT_CNT,
-        DOUT_VALID => DOUT_VLD
+        DOUT_VALID => DOUT_VLD,
+        RES_REG => RES_REG
     );
 
     -- instance EQ pro CLK == 15
@@ -357,7 +379,7 @@ begin
     port map(
         DM_IN => DIN,
         ADDR => DMX_ADDRESS_SUB,
-        DM_OUT => DOUT
+        DM_OUT => DMX_OUT
     );
 
     -- instance: citac hodinoveho signalu
@@ -394,10 +416,41 @@ begin
         EQ_OUT => BITS_EQ_8
     );
 
+
+    -- instance OR_8
+    or8: entity work.OR_8
+    port map (
+        OR_8_IN_1 => DMX_OUT,
+        OR_8_IN_2 => CURR_REG_VAL,
+        OR_8_OUT => NEW_REG_VAL_1
+    );
+
+    -- instance AND_8_1
+    and81: entity work.AND_8_1
+    port map (
+        AND_8_IN_1 => NEW_REG_VAL_1,
+        AND_8_IN_2 => NOT_RES_REG,
+        AND_8_OUT => NEW_REG_VAL_2
+    );
+
+    -- instance registru
+    registr: entity work.REG
+    port map (
+        REG_IN => NEW_REG_VAL_2,
+        REG_ENABLE => REG_ENABLE,
+        REG_VAL => CURR_REG_VAL
+    );
+
     -- process co pri zmene DIN zmeni signal DIN_NOT
     process (DIN)
     begin
         DIN_NOT <= not DIN;
+    end process;
+
+    -- proces co updatuje signal NOT_RES_REG kdyz se zmeni RES_REG
+    process (RES_REG)
+    begin
+        NOT_RES_REG <= not RES_REG;
     end process;
 
     -- toto tu bylo puvodne

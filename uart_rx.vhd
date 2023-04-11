@@ -84,6 +84,87 @@ entity SUB_4 is
 end entity;
 
 
+-- entita OR (8bit/8bit)
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
+entity OR_8 is 
+    port (
+        OR_8_IN_1 : in std_logic_vector(7 downto 0);
+        OR_8_IN_2 : in std_logic_vector(7 downto 0);
+        OR_8_OUT : out std_logic_vector(7 downto 0);
+    );
+end entity;
+
+
+-- entita AND (8+1bit/8bit)
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
+entity AND_8_1 is 
+    port (
+        AND_8_IN_1 : in std_logic_vector(7 downto 0);
+        AND_8_IN_2 : in std_logic;
+        AND_8_OUT : out std_logic_vector(7 downto 0);
+    );
+end entity;
+
+
+-- entita OR (2 vstupy)
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
+entity OR_2 is 
+    port(
+        OR_IN_1 : in std_logic;
+        OR_IN_2 : in std_logic;
+        OR_OUT : out std_logic
+    );
+end entity;
+
+
+
+-- architektura AND (8+1bit/8bit)
+-- veme kazdy bit z prvniho vstupu (vektoru) a udela and s druhym vstupem
+-- timto udela jakysi 'enable'. cely vektor bude bud puvodni nebo bude 0
+architecture behavioral of AND_8_1 is
+begin
+    AND_8_OUT(0) <= '1' when AND_8_IN_1(0) = '1' and AND_8_IN_2 = '1'
+    else '0'
+    AND_8_OUT(1) <= '1' when AND_8_IN_1(1) = '1' and AND_8_IN_2 = '1'
+    else '0'
+    AND_8_OUT(2) <= '1' when AND_8_IN_1(2) = '1' and AND_8_IN_2 = '1'
+    else '0'
+    AND_8_OUT(3) <= '1' when AND_8_IN_1(3) = '1' and AND_8_IN_2 = '1'
+    else '0'
+    AND_8_OUT(4) <= '1' when AND_8_IN_1(4) = '1' and AND_8_IN_2 = '1'
+    else '0'
+    AND_8_OUT(5) <= '1' when AND_8_IN_1(5) = '1' and AND_8_IN_2 = '1'
+    else '0'
+    AND_8_OUT(6) <= '1' when AND_8_IN_1(6) = '1' and AND_8_IN_2 = '1'
+    else '0'
+    AND_8_OUT(7) <= '1' when AND_8_IN_1(7) = '1' and AND_8_IN_2 = '1'
+    else '0'
+
+end architecture;
+
+
+-- architektura OR (8bit/8bit)
+architecture behavioral of OR_8 is
+begin
+    
+    OR_8_OUT(0) <= '1' when OR_8_IN_1(0) = '1' or OR_8_IN_2(0) = '1' else '0';
+    OR_8_OUT(1) <= '1' when OR_8_IN_1(1) = '1' or OR_8_IN_2(1) = '1' else '0';
+    OR_8_OUT(2) <= '1' when OR_8_IN_1(2) = '1' or OR_8_IN_2(2) = '1' else '0';
+    OR_8_OUT(3) <= '1' when OR_8_IN_1(3) = '1' or OR_8_IN_2(3) = '1' else '0';
+    OR_8_OUT(4) <= '1' when OR_8_IN_1(4) = '1' or OR_8_IN_2(4) = '1' else '0';
+    OR_8_OUT(5) <= '1' when OR_8_IN_1(5) = '1' or OR_8_IN_2(5) = '1' else '0';
+    OR_8_OUT(6) <= '1' when OR_8_IN_1(6) = '1' or OR_8_IN_2(6) = '1' else '0';
+    OR_8_OUT(7) <= '1' when OR_8_IN_1(7) = '1' or OR_8_IN_2(7) = '1' else '0';
+
+end architecture;
+
+
 -- architektura SUB (4bit)
 architecture behavioral of SUB_4 is
 begin
@@ -97,13 +178,7 @@ end architecture;
 -- architektura AND (2 vstupy)
 architecture behavioral of AND_2 is
 begin
-    process (AND_IN_1, AND_IN_2)
-    begin
-        AND_OUT <= '0';
-        if (AND_IN_1 = '1' and AND_IN_2 = '1') then
-            AND_OUT <= '1';
-        end if;
-    end process;
+    AND_OUT <= '1' when AND_IN_1 = '1' and AND_IN_2 = '1' else '0'
 end architecture;
 
 

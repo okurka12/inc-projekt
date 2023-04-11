@@ -123,6 +123,13 @@ entity OR_2 is
 end entity;
 
 
+-- architektura OR (2 vstupy)
+architecture behavioral of OR_2 is
+begin
+    OR_OUT <= '1' when OR_IN_1 = '1' or OR_IN_2 = '1' else '0'
+end architecture;
+
+
 
 -- architektura AND (8+1bit/8bit)
 -- veme kazdy bit z prvniho vstupu (vektoru) a udela and s druhym vstupem

@@ -251,11 +251,12 @@ begin
         OR_8_OUT => REG_IN
     );
 
+    -- entita registr
     registr: entity work.REG
     port map (
-        REG_ENABLE => '1',
+        REG_ENABLE => REG_ENABLE,
         REG_IN => REG_IN,
-        REG_RES => '0',
+        REG_RES => RST_REG,
         REG_VAL => REG_OUT
     );
 

@@ -26,8 +26,76 @@ end entity;
 
 
 architecture behavioral of UART_RX_FSM is
-type t_state is (STAV_1, STAV_2, STAV_3);  -- seznam stavů
+
+type t_state is (IDLE, WAIT_FOR_MID, DATA, GO_IDLE);  -- seznam stavu
+signal current_state : t_state;
+signal next_state    : t_state;
+
 begin
 
+    process (CLK, RST) 
+    begin
+        if (RST = '1') then
+            current_state <= IDLE;
+        elsif (rising_edge(CLK)) then
+            current_state <= next_state;
+        end if;
+    end process;
+
+    process (current_state, DIN, CLK_CNT, BIT_CNT)
+    begin
+        case current_state is
+
+        -- stav IDLE
+        when IDLE =>
+            RST_BIT <= '0'; ------------
+            RST_REG <= '0'; ------------
+            
+            -- kdyz din je 0 resetuj CLK_CNT a prejdi do WAIT_FOR_MID
+            if (DIN = '0') then
+                RST_CLK_CNT <= '1';
+                next_state <= WAIT_FOR_MID;
+            else
+                DOUT_VLD <= '0';
+                next_state <= IDLE;
+            end if;
+
+        when WAIT_FOR_MID =>
+            if (CLK_CNT = "1000") then
+                RST_CLK_CNT <= '1';
+                next_state <= DATA;
+            else
+                RST_CLK_CNT <= '0';
+                next_state <= WAIT_FOR_MID;
+            end if;
+
+        when DATA =>
+            if (CLK_CNT = "1111") then
+                REG_ENABLE <= '1';
+                INC_BIT <= '1';
+            else
+                REG_ENABLE <= '0';
+                INC_BIT <= '0';
+            end if;
+            
+            if (BIT_CNT = "1000") then
+                next_state <= GO_IDLE;
+                DOUT_VLD <= '1';
+            else
+                next_state <= DATA;
+            end if;
+
+        when GO_IDLE =>
+            DOUT_VLD <= '0';
+            RST_REG <= '1';
+            RST_BIT <= '1';
+            next_state <= IDLE;
+
+
+
+        when others =>
+            next_state <= IDLE;
+        end case;
+    end process;
 
 end architecture;

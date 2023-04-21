@@ -215,10 +215,10 @@ begin
         RST_BIT => RST_BIT,
         BIT_CNT => BIT_CNT,
         REG_ENABLE => REG_ENABLE,
-        RST_REG => RST_REG,
-        DOUT_VLD => DOUT_VLD
+        RST_REG => RST_REG
+        --DOUT_VLD => DOUT_VLD
     );
-
+    DOUT_VLD <= INC_BIT;
     -- instance: citac hodinoveho signalu
     cnt_clk: entity work.COUNTER_4
     port map (

@@ -38,6 +38,7 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 entity COUNTER_4 is
     port(
+        CLK     : in std_logic;
         CNT_IN  : in std_logic;
         CNT_CE  : in std_logic;
         CNT_RES : in std_logic;
@@ -123,26 +124,36 @@ signal CNT_SIG : std_logic_vector(3 downto 0) := "0000";
 
 begin  -- architecture
 
-    process(CNT_RES, CNT_IN, CNT_CE)
-    begin  -- process
+    -- process(CNT_RES, CNT_IN, CNT_CE)
+    -- begin  -- process
 
-        -- reset counteru
-        -- if (CNT_RES = '1') then 
-        if (rising_edge(CNT_RES)) then 
+    --     -- reset counteru
+    --     if (CNT_RES = '1') then 
+    --     -- if (rising_edge(CNT_RES)) then 
+    --         CNT_SIG <= "0000";
+    --     end if;
+
+    --     -- inkrement counteru
+    --     if (rising_edge(CNT_IN) and CNT_CE = '1') then
+    --         if (CNT_SIG = "1111") then
+    --             CNT_SIG <= "0000";
+    --         else
+    --             CNT_SIG <= CNT_SIG + 1;
+    --         end if;
+    --     else
+    --         CNT_SIG <= CNT_SIG;  -- toto tady musi byt
+    --     end if;
+
+    -- end process;
+    process (CLK)
+    begin
+        if (CNT_RES = '1') then
             CNT_SIG <= "0000";
-        end if;
-
-        -- inkrement counteru
-        if (rising_edge(CNT_IN) and CNT_CE = '1') then
-            if (CNT_SIG = "1111") then
-                CNT_SIG <= "0000";
-            else
+        elsif (rising_edge(CLK)) then
+            if (CNT_IN = '1') then
                 CNT_SIG <= CNT_SIG + 1;
             end if;
-        else
-            CNT_SIG <= CNT_SIG;  -- toto tady musi byt
         end if;
-
     end process;
 
     CNT_OUT <= CNT_SIG;
@@ -216,12 +227,17 @@ begin
         BIT_CNT => BIT_CNT,
         REG_ENABLE => REG_ENABLE,
         RST_REG => RST_REG
-        --DOUT_VLD => DOUT_VLD
+        -- DOUT_VLD => DOUT_VLD
     );
-    DOUT_VLD <= INC_BIT;
+    DOUT_VLD <= RST_CLK_CNT;
+    -- DOUT <= REG_OUT;
+    DOUT(3 downto 0) <= CLK_CNT;
+    DOUT(7 downto 4) <= "0000";
+
     -- instance: citac hodinoveho signalu
     cnt_clk: entity work.COUNTER_4
     port map (
+        CLK => CLK,
         CNT_IN => CLK,
         CNT_CE => '1',
         CNT_RES => RST_CLK_CNT,
@@ -231,6 +247,7 @@ begin
     -- instance: citac bitu
     cnt_bit: entity work.COUNTER_4
     port map (
+        CLK => CLK,
         CNT_IN => INC_BIT,
         CNT_CE => '1',
         CNT_RES => RST_BIT,
@@ -260,7 +277,6 @@ begin
         REG_VAL => REG_OUT
     );
 
-    DOUT <= REG_OUT;
     BIT_CNT <= DMX_ADDR;
 
 end architecture;

@@ -67,7 +67,8 @@ entity REG is
     port(
         REG_IN : in std_logic_vector(7 downto 0);
         REG_ENABLE : in std_logic;
-        REG_VAL : out std_logic_vector(7 downto 0)
+        REG_VAL : out std_logic_vector(7 downto 0);
+        REG_RES : in std_logic
     );
 end entity;
 
@@ -80,11 +81,15 @@ architecture behavioral of REG is
 
 begin
 
-    -- proces na zmenu hodnoty registru
-    process (REG_IN, REG_ENABLE)
+    -- proces na zmenu hodnoty registru (pripadne reset)
+    process (REG_IN, REG_ENABLE, REG_RES)
     begin
-        if (REG_ENABLE = '1') then
-            REG_VAL_SIG <= REG_IN;
+        if (REG_RES = '1') then
+            REG_VAL_SIG <= "00000000";
+        else
+            if (REG_ENABLE = '1') then
+                REG_VAL_SIG <= REG_IN;
+            end if;
         end if;
     end process;
 
@@ -177,6 +182,15 @@ architecture behavioral of UART_RX is
     -- propojeni DMX a OR_8
     signal DMX_OUT : std_logic_vector(7 downto 0);
 
+    -- vystup registru
+    signal REG_OUT : std_logic_vector(7 downto 0);
+
+    -- vstup do registru
+    signal REG_IN : std_logic_vector(7 downto 0);
+
+    -- adresa DMX
+    signal DMX_ADDR    : std_logic_vector(3 downto 0);
+
     -- propojeni FSM s prvky v obvode
     signal RST_CLK_CNT : std_logic;
     signal CLK_CNT     : std_logic_vector(3 downto 0);
@@ -214,6 +228,38 @@ begin
         CNT_OUT => CLK_CNT
     );
 
-    DOUT <= (others => '0');
+    -- instance: citac bitu
+    cnt_bit: entity work.COUNTER_4
+    port map (
+        CNT_IN => INC_BIT,
+        CNT_CE => '1',
+        CNT_RES => RST_BIT,
+        CNT_OUT => DMX_ADDR
+    );
+
+    dmx: entity work.DEMUX_4_8
+    port map (
+        ADDR => DMX_ADDR,
+        DM_IN => DIN,
+        DM_OUT => DMX_OUT
+    );
+
+    or88: entity work.OR_8
+    port map (
+        OR_8_IN_1 => DMX_OUT,
+        OR_8_IN_2 => REG_OUT,
+        OR_8_OUT => REG_IN
+    );
+
+    registr: entity work.REG
+    port map (
+        REG_ENABLE => '1',
+        REG_IN => REG_IN,
+        REG_RES => '0',
+        REG_VAL => REG_OUT
+    );
+
+    DOUT <= REG_OUT;
+    BIT_CNT <= DMX_ADDR;
 
 end architecture;

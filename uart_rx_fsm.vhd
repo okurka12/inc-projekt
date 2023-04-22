@@ -26,7 +26,7 @@ entity UART_RX_FSM is
 end entity;
 
 
--- -- toto aby se daly reportovat vektory
+-- -- -- -- -- toto aby se daly reportovat vektory
 -- library ieee;
 -- use ieee.std_logic_1164.all;
 -- use ieee.numeric_std.all;
@@ -38,7 +38,7 @@ end entity;
 
 architecture behavioral of UART_RX_FSM is
 
--- funkce na reportovani vektoru
+-- -- -- -- funkce na reportovani vektoru
 --------------------------------------------------------------------------------
 function to_string(vec: std_logic_vector) return string is
   variable result: string(vec'left + 1 downto 1);
@@ -77,6 +77,7 @@ begin
 
         -- stav IDLE
         when IDLE =>
+            REG_ENABLE <= '0';
             RST_BIT <= '0';
             RST_REG <= '0';
 
@@ -84,31 +85,38 @@ begin
             if (DIN = '0') then
                 RST_CLK_CNT <= '1';
                 next_state <= WAIT_FOR_MID;
-                -- report "jsem ve stavu IDLE, DIN je 0, resetuju CLK_CNT a prechazim do WAIT_FOR_MID"; 
+                -- report "IDLE: DIN je 0, resetuju CLK_CNT a prechazim do WAIT_FOR_MID"; 
             else
                 DOUT_VLD <= '0';
                 next_state <= IDLE;
-                -- report "jsem ve stavu IDLE a DIN neni 0";
+                -- report "IDLE: DIN neni 0, CLK_CNT=" & to_string(CLK_CNT);
             end if;
 
         -- stav WAIF_ROR_MID
         when WAIT_FOR_MID =>
+            REG_ENABLE <= '0';
 
-            -- kdyz CLK_CNT je 8, resetuj ho a prejdi do DATA
-            if (CLK_CNT = "1000") then
+            -- kdyz CLK_CNT je 6, resetuj ho a prejdi do DATA
+            -- (automatu trva 3 takty nez nastavi REG_ENABLE na 1)
+            -- datova cesta az k registru je ciste kombinacni takze tam toto
+            -- neni potreba resit
+            if (CLK_CNT = "0110") then
                 RST_CLK_CNT <= '1';
+                RST_REG <= '1';
                 next_state <= DATA;
-                -- report "jsem ve stavu WAIT_FOR_MID, CLK_CNT=1000 resetuju CLK_CNT a prechazim do DATA";
+                -- report "WAIT_FOR_MID: CLK_CNT=1000 resetuju CLK_CNT a prechazim do DATA";
             else
                 RST_CLK_CNT <= '0';
                 next_state <= WAIT_FOR_MID;
+                -- report "WAIT_FOR_MID: clk_cnt=" & to_string(CLK_CNT);
             end if;
 
         -- stav DATA
         when DATA =>
+            RST_REG <= '0';
             RST_CLK_CNT <= '0';
             if (CLK_CNT = "1111") then
-            -- report "jsem ve stavu DATA, CLK_CNT=1111 inkrementuji BIT_CNT";
+            -- report "DATA: CLK_CNT=1111 inkrementuji BIT_CNT";
                 REG_ENABLE <= '1';
                 INC_BIT <= '1';
             else
@@ -117,20 +125,27 @@ begin
             end if;
 
             if (BIT_CNT = "1000") then
-                -- report "CLK_CNT = " & to_string(CLK_CNT) & " BIT_CNT = " & to_string(BIT_CNT) & " prechazim do GO_IDLE";
+                -- report "DATA: CLK_CNT = " & to_string(CLK_CNT) & " BIT_CNT = " & to_string(BIT_CNT) & " prechazim do GO_IDLE";
                 next_state <= GO_IDLE;
                 DOUT_VLD <= '1';
             else
-                -- report "CLK_CNT = " & to_string(CLK_CNT) & " BIT_CNT = " & to_string(BIT_CNT) & " pokracuju DATA";
+                -- report "DATA: CLK_CNT = " & to_string(CLK_CNT) & " BIT_CNT = " & to_string(BIT_CNT) & " pokracuju DATA";
                 next_state <= DATA;
             end if;
 
         -- stav GO_IDLE
         when GO_IDLE =>
+            -- report "GO_IDLE:";
             DOUT_VLD <= '0';
-            RST_REG <= '1';
             RST_BIT <= '1';
-            next_state <= IDLE;
+            REG_ENABLE <= '0';
+            if (DIN = '0') then
+                -- report "GO_IDLE: cekam nez se linka nastavi na idle jednicku";
+                next_state <= GO_IDLE;
+            else
+                -- report "GO_IDLE: din je 1 takze jdu do IDLE";
+                next_state <= IDLE;
+            end if;
 
 
 

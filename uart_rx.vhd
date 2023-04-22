@@ -78,7 +78,7 @@ end entity;
 architecture behavioral of REG is
 
     -- signal ktery bude drzet hodnotu registru
-    signal REG_VAL_SIG : std_logic_vector(7 downto 0);
+    signal REG_VAL_SIG : std_logic_vector(7 downto 0) := "00000000";
 
 begin
 
@@ -87,8 +87,10 @@ begin
     begin
         if (REG_RES = '1') then
             REG_VAL_SIG <= "00000000";
+            -- report "registr byl resetovan";
         else
             if (REG_ENABLE = '1') then
+                -- report "hodnota registru upravena";
                 REG_VAL_SIG <= REG_IN;
             end if;
         end if;
@@ -267,8 +269,10 @@ begin
         RST_REG => RST_REG,
         DOUT_VLD => DOUT_VLD
     );
-    -- DOUT_VLD <= RST_CLK_CNT;
     DOUT <= REG_OUT;
+
+    -- -- DEBUG:
+    -- DOUT_VLD <= REG_ENABLE;
     -- DOUT(3 downto 0) <= CLK_CNT;
     -- DOUT(7 downto 4) <= "0000";
 

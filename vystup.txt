@@ -15,9 +15,9 @@
 Sending data onto DIN with value: 0x47
 Output data from DOUT with value: 0x47
 Sending data onto DIN with value: 0x55
-Output data from DOUT with value: 0x57
+Output data from DOUT with value: 0x55
 Sending data onto DIN with value: 0xAA
-Output data from DOUT with value: 0x7A
-Output data from DOUT with value: 0xD5
+Output data from DOUT with value: 0xAA
 Sending data onto DIN with value: 0xCA
 Output data from DOUT with value: 0xCA
+WM Destroy

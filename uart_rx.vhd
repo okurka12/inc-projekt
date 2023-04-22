@@ -121,9 +121,31 @@ architecture behavioral of COUNTER_4 is
 
 -- tady je signal aby se z toho dalo i cist
 signal CNT_SIG : std_logic_vector(3 downto 0) := "0000";
+signal CNT_SIG_NEXT : std_logic_vector(3 downto 0) := "0000";
 
 begin  -- architecture
 
+
+    -- toto je verze counteru ktera se resetne okamzite ale kdyz ji 
+    -- pouziji tak to zase vubec nefunguje takze idk
+    ----------------------------------------------------------------------------
+    -- process (clk)
+    -- begin
+    --     if (cnt_res = '1') then
+    --         CNT_SIG <= "0000";
+    --     elsif (rising_edge(clk)) then
+    --         if (cnt_in = '1') then
+    --             CNT_SIG <= CNT_SIG + 1;
+    --         end if;
+    --     end if;
+    -- end process;
+    -- CNT_OUT <= CNT_SIG;
+    ----------------------------------------------------------------------------
+
+    --     -- proste ja uz ani nevim co toto je ale nejakym zahadnym zpusobem
+    --     -- se mi podarilo udelat counter co se resetne kdyz rst=1 
+    --     -- ale az po trech taktech, what :'(
+    ----------------------------------------------------------------------------
     -- process(CNT_RES, CNT_IN, CNT_CE)
     -- begin  -- process
 
@@ -145,18 +167,34 @@ begin  -- architecture
     --     end if;
 
     -- end process;
+    -- CNT_OUT <= CNT_SIG;
+    ----------------------------------------------------------------------------
+
+
+    -- jakasi divna synchronni verze counteru ktery se inkrementuje
+    -- az s rising edge clk uz nechapu proc jsem toto tvoril honestly
+    -- uz jsem byl velice zoufaly ale radeji si to tu ponecham
+    ----------------------------------------------------------------------------
     process (CLK)
     begin
-        if (CNT_RES = '1') then
-            CNT_SIG <= "0000";
-        elsif (rising_edge(CLK)) then
-            if (CNT_IN = '1') then
-                CNT_SIG <= CNT_SIG + 1;
-            end if;
+        if (rising_edge(CLK)) then
+            CNT_OUT <= CNT_SIG_NEXT;
         end if;
     end process;
 
-    CNT_OUT <= CNT_SIG;
+    process (CNT_RES, CNT_IN)
+    begin
+        if (CNT_RES = '1') then
+            CNT_SIG_NEXT <= "0000";
+        -- elsif (CNT_IN = '1') then
+        elsif (rising_edge(CNT_IN)) then
+            CNT_SIG_NEXT <= CNT_SIG_NEXT + 1;
+        else
+            CNT_SIG_NEXT <= CNT_SIG_NEXT;
+        end if;
+    end process;
+    ----------------------------------------------------------------------------
+
 
 end architecture;
 
@@ -226,13 +264,13 @@ begin
         RST_BIT => RST_BIT,
         BIT_CNT => BIT_CNT,
         REG_ENABLE => REG_ENABLE,
-        RST_REG => RST_REG
-        -- DOUT_VLD => DOUT_VLD
+        RST_REG => RST_REG,
+        DOUT_VLD => DOUT_VLD
     );
-    DOUT_VLD <= RST_CLK_CNT;
-    -- DOUT <= REG_OUT;
-    DOUT(3 downto 0) <= CLK_CNT;
-    DOUT(7 downto 4) <= "0000";
+    -- DOUT_VLD <= RST_CLK_CNT;
+    DOUT <= REG_OUT;
+    -- DOUT(3 downto 0) <= CLK_CNT;
+    -- DOUT(7 downto 4) <= "0000";
 
     -- instance: citac hodinoveho signalu
     cnt_clk: entity work.COUNTER_4

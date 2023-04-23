@@ -139,6 +139,9 @@ begin
             DOUT_VLD <= '0';
             RST_BIT <= '1';
             REG_ENABLE <= '0';
+
+            -- -- tuhletu if konstrukci jsem odsud chtel oddelat ale ona se ta
+            -- -- simulace pak chovala podivne, takze ji tady radeji necham
             if (DIN = '0') then
                 -- report "GO_IDLE: cekam nez se linka nastavi na idle jednicku";
                 next_state <= GO_IDLE;
